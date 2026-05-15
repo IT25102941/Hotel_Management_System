@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room Management - Hotel Management System</title>
+    <link rel="stylesheet" href="/css/crud-pages.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.5) 0%, rgba(118, 75, 162, 0.5) 100%),
+                        url('/images/hotel.jpg') center/cover no-repeat fixed;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        nav {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.9) 100%);
+            padding: 1.2rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #667eea;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .page-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+        }
+
+        .form-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .form-panel h2 {
+            font-size: 1.5em;
+            margin-bottom: 25px;
+            color: #2c3e50;
+            font-weight: 700;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.9em;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 0.95em;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .data-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .panel-header h2 {
+            font-size: 1.5em;
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        .search-box {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            width: 250px;
+            font-size: 0.95em;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 18px 15px;
+            text-align: left;
+            font-weight: 700;
+            color: white;
+        }
+
+        .data-table td {
+            padding: 16px 15px;
+            border-bottom: 1px solid #e9ecef;
+            color: #555;
+        }
+
+        .data-table tbody tr:hover {
+            background: #f5f7ff;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-edit, .btn-delete {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .alert {
+            padding: 16px 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            border-left: 4px solid;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border-color: #28a745;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border-color: #dc3545;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-panel {
+                position: relative;
+                top: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="/dashboard" class="logo">
+                <span>🏨</span>
+                Hotel Management
+            </a>
+            <ul class="nav-links">
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/home">Home</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>🛏️ Room Management</h1>
+            <p>Track room status and availability</p>
+        </div>
+
+        <div style="background: #e7f3ff; border-left: 4px solid #2196F3; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
+            <strong>💡 Tip:</strong> Each room number must be unique. Use different numbers like 101, 102, 103, etc.
+        </div>
+
+        <div id="alert" class="alert"></div>
+
+        <div class="content-grid">
+            <div class="form-panel">
+                <h2 id="formTitle">Add Room</h2>
+                <form id="roomForm">
+                    <div class="form-group">
+                        <label>Room Number *</label>
+                        <input type="text" id="roomNumber" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Room Type *</label>
+                        <select id="roomType" required>
+                            <option value="">Select Type</option>
+                            <option value="Single">Single</option>
+                            <option value="Double">Double</option>
+                            <option value="Suite">Suite</option>
+                            <option value="Deluxe">Deluxe</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Capacity *</label>
+                        <input type="number" id="capacity" min="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Price per Night *</label>
+                        <input type="number" id="pricePerNight" min="0" step="0.01" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status *</label>
+                        <select id="status" required>
+                            <option value="Available">Available</option>
+                            <option value="Occupied">Occupied</option>
+                            <option value="Maintenance">Maintenance</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Amenities</label>
+                        <textarea id="amenities" placeholder="e.g., Wi-Fi, AC, TV..."></textarea>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn-primary">Save Room</button>
+                        <button type="reset" class="btn-secondary">Clear</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="data-panel">
+                <div class="panel-header">
+                    <h2>Rooms List</h2>
+                    <input type="text" class="search-box" id="searchBox" placeholder="Search rooms...">
+                </div>
+
+                <div id="roomsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api';
+        let editingId = null;
+
+        function showAlert(message, type = 'success') {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = `alert ${type} show`;
+            setTimeout(() => alert.classList.remove('show'), 4000);
+        }
+
+        async function loadRooms() {
+            try {
+                const response = await fetch(`${API_BASE}/rooms`);
+                const rooms = await response.json();
+
+                if (rooms.length === 0) {
+                    document.getElementById('roomsList').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🛏️</div>
+                            <p>No rooms added yet. Add your first room!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                document.getElementById('roomsList').innerHTML = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Room #</th>
+                                <th>Type</th>
+                                <th>Capacity</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rooms.map(room => `
+                                <tr>
+                                    <td>${room.roomNumber}</td>
+                                    <td>${room.roomType}</td>
+                                    <td>${room.capacity}</td>
+                                    <td>$${room.pricePerNight}</td>
+                                    <td><span style="padding: 4px 8px; border-radius: 4px; background: ${room.status === 'Available' ? '#d4edda' : room.status === 'Occupied' ? '#fff3cd' : '#f8d7da'}; color: ${room.status === 'Available' ? '#155724' : room.status === 'Occupied' ? '#856404' : '#721c24'}">${room.status}</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn-edit" onclick="editRoom(${room.id})">Edit</button>
+                                            <button class="btn-delete" onclick="deleteRoom(${room.id})">Delete</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (error) {
+                showAlert('Error loading rooms', 'error');
+            }
+        }
+
+        document.getElementById('roomForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const roomData = {
+                roomNumber: document.getElementById('roomNumber').value,
+                roomType: document.getElementById('roomType').value,
+                capacity: parseInt(document.getElementById('capacity').value),
+                pricePerNight: parseFloat(document.getElementById('pricePerNight').value),
+                status: document.getElementById('status').value,
+                amenities: document.getElementById('amenities').value
+            };
+
+            try {
+                let response;
+                if (editingId) {
+                    response = await fetch(`${API_BASE}/rooms/${editingId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(roomData)
+                    });
+                } else {
+                    response = await fetch(`${API_BASE}/rooms`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(roomData)
+                    });
+                }
+
+                if (response.ok) {
+                    showAlert(editingId ? 'Room updated!' : 'Room added!');
+                    document.getElementById('roomForm').reset();
+                    editingId = null;
+                    document.getElementById('formTitle').textContent = 'Add Room';
+                    loadRooms();
+                } else {
+                    const errorData = await response.text();
+                    let errorMessage = 'Failed to save room';
+
+                    if (errorData.includes('Duplicate entry') && errorData.includes('room')) {
+                        errorMessage = 'Room number already exists! Please use a different room number.';
+                    } else if (errorData.includes('VALIDATION_ERROR')) {
+                        try {
+                            const json = JSON.parse(errorData);
+                            const errors = json.data;
+                            errorMessage = 'Validation Error: ' + Object.values(errors).join(', ');
+                        } catch (e) {
+                            errorMessage = 'Validation Error: Please check your input';
+                        }
+                    } else {
+                        errorMessage = 'Error: ' + (errorData || 'Failed to save room');
+                    }
+
+                    showAlert(errorMessage, 'error');
+                    console.error('Response status:', response.status);
+                    console.error('Response body:', errorData);
+                }
+            } catch (error) {
+                showAlert('Error saving room: ' + error.message, 'error');
+                console.error('Fetch error:', error);
+            }
+        });
+
+        async function editRoom(id) {
+            try {
+                const response = await fetch(`${API_BASE}/rooms/${id}`);
+                const room = await response.json();
+
+                document.getElementById('roomNumber').value = room.roomNumber;
+                document.getElementById('roomType').value = room.roomType;
+                document.getElementById('capacity').value = room.capacity;
+                document.getElementById('pricePerNight').value = room.pricePerNight;
+                document.getElementById('status').value = room.status;
+                document.getElementById('amenities').value = room.amenities || '';
+
+                editingId = id;
+                document.getElementById('formTitle').textContent = 'Edit Room';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (error) {
+                showAlert('Error loading room details', 'error');
+            }
+        }
+
+        async function deleteRoom(id) {
+            if (!confirm('Delete this room?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/rooms/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    showAlert('Room deleted!');
+                    loadRooms();
+                }
+            } catch (error) {
+                showAlert('Error deleting room', 'error');
+            }
+        }
+
+        document.getElementById('searchBox').addEventListener('keyup', () => {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const rows = document.querySelectorAll('.data-table tbody tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        loadRooms();
+    </script>
+</body>
+</html>
+
