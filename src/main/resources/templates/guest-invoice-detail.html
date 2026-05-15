@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Details - Hotel Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            color: #333;
+        }
+        nav { background: linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.9) 100%); padding: 1.2rem 0; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .nav-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; }
+        .logo { font-size: 1.8em; font-weight: 700; color: #667eea; text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { color: white; text-decoration: none; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: #667eea; }
+        .user-menu { display: flex; align-items: center; gap: 15px; }
+        .user-info { color: white; text-align: right; }
+        .user-name { font-weight: 700; font-size: 0.95em; }
+        .user-role { font-size: 0.8em; color: #aaa; }
+        .btn-logout { background: #e74c3c; color: white; padding: 8px 15px; border: none; border-radius: 5px; text-decoration: none; font-size: 0.9em; cursor: pointer; transition: all 0.3s; }
+        .btn-logout:hover { background: #c0392b; }
+
+        .invoice-container {
+            background: white;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .hotel-info h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .hotel-info p {
+            color: #666;
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+
+        .invoice-meta {
+            text-align: right;
+        }
+
+        .invoice-meta h2 {
+            font-size: 1.8em;
+            color: #764ba2;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .meta-row {
+            display: flex;
+            justify-content: flex-end;
+            margin: 8px 0;
+            font-weight: 500;
+        }
+
+        .meta-label {
+            width: 100px;
+            text-align: right;
+            color: #666;
+            margin-right: 15px;
+        }
+
+        .meta-value {
+            width: 200px;
+            text-align: left;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #667eea;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e9ecef;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-block {
+            margin-bottom: 15px;
+        }
+
+        .info-label {
+            color: #666;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .charges-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .charges-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 700;
+            border: none;
+        }
+
+        .charges-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .charges-table tr:last-child td {
+            border-bottom: 2px solid #667eea;
+            font-weight: 700;
+            background: #f9fafb;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .currency {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        .status-paid {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-unpaid {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-overdue {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            border-top: 1px solid #e9ecef;
+            margin-top: 40px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .print-button {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-print {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            margin-right: 10px;
+        }
+
+        .btn-print:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-back {
+            background: #95a5a6;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-back:hover {
+            background: #7f8c8d;
+        }
+
+        .button-group {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .col-md-6 {
+            width: 100%;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .invoice-container {
+                box-shadow: none;
+                border-radius: 0;
+                max-width: 100%;
+                padding: 20px;
+            }
+
+            .print-button, .button-group {
+                display: none;
+            }
+
+            .d-print-none {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .invoice-container {
+                padding: 20px;
+            }
+
+            .invoice-header {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .invoice-meta {
+                text-align: left;
+            }
+
+            .meta-row {
+                justify-content: flex-start;
+            }
+
+            .meta-label {
+                text-align: left;
+            }
+
+            .charges-table {
+                font-size: 0.9em;
+            }
+
+            .charges-table th,
+            .charges-table td {
+                padding: 10px;
+            }
+
+            .row {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn-print, .btn-back {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo"><span>🏨</span> Hotel Management</a>
+            <ul class="nav-links">
+                <li><a href="/guest-dashboard">My Dashboard</a></li>
+                <li><a href="/home">Home</a></li>
+            </ul>
+            <div class="user-menu">
+                <div class="user-info">
+                    <div class="user-name" th:text="${session.userName}">Guest Name</div>
+                    <div class="user-role">👤 Guest</div>
+                </div>
+                <a href="/auth/logout" class="btn-logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="button-group d-print-none">
+        <button class="btn-print" onclick="window.print()">🖨️ Print Invoice</button>
+        <a href="/guest-invoices" class="btn-back">← Back to Invoices</a>
+    </div>
+
+    <div class="invoice-container">
+        <!-- Header -->
+        <div class="invoice-header">
+            <div class="hotel-info">
+                <h1>🏨 Grand Hotel</h1>
+                <p>Premium Hospitality Services</p>
+                <p>123 Hotel Street, City Center</p>
+                <p>Phone: +1 (555) 123-4567</p>
+                <p>Email: billing@grandhotel.com</p>
+            </div>
+
+            <div class="invoice-meta">
+                <h2>TAX INVOICE</h2>
+                <div class="meta-row">
+                    <span class="meta-label">Invoice #:</span>
+                    <span class="meta-value" th:text="${invoice.invoiceNumber}"></span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Issue Date:</span>
+                    <span class="meta-value" th:text="${#temporals.format(invoice.invoiceDate, 'MMM dd, yyyy')}"></span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Due Date:</span>
+                    <span class="meta-value" th:text="${#temporals.format(invoice.dueDate, 'MMM dd, yyyy')}"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bill To Section -->
+        <div class="section">
+            <div class="section-title">Bill To:</div>
+            <div class="info-block">
+                <div class="info-label">Guest Name</div>
+                <div class="info-value" th:text="${guest.firstName} + ' ' + ${guest.lastName}"></div>
+            </div>
+            <div class="info-block">
+                <div class="info-label">Email</div>
+                <div class="info-value" th:text="${guest.email}"></div>
+            </div>
+            <div class="info-block">
+                <div class="info-label">Phone</div>
+                <div class="info-value" th:text="${guest.phoneNumber}"></div>
+            </div>
+            <div class="info-block">
+                <div class="info-label">Address</div>
+                <div class="info-value" th:text="${guest.address != null ? guest.address : 'N/A'}"></div>
+            </div>
+        </div>
+
+        <!-- Room Details Section -->
+        <div class="section">
+            <div class="section-title">Room & Stay Details:</div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="info-block">
+                        <div class="info-label">Room Number</div>
+                        <div class="info-value" th:text="'Room ' + ${room.roomNumber}"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-block">
+                        <div class="info-label">Room Type</div>
+                        <div class="info-value" th:text="${room.roomType}"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="info-block">
+                        <div class="info-label">Check-In Date</div>
+                        <div class="info-value" th:text="${#temporals.format(booking.checkInDate, 'MMM dd, yyyy')}"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-block">
+                        <div class="info-label">Check-Out Date</div>
+                        <div class="info-value" th:text="${#temporals.format(booking.checkOutDate, 'MMM dd, yyyy')}"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="info-block">
+                <div class="info-label">Number of Nights</div>
+                <div class="info-value" th:text="${nights} + ' night(s)'"></div>
+            </div>
+        </div>
+
+        <!-- Charges Table -->
+        <div class="section">
+            <div class="section-title">Charges Summary:</div>
+            <table class="charges-table">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th class="text-right">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Room Cost (<span th:text="${nights}"></span> nights @ <span class="currency" th:text="'$' + ${#numbers.formatDecimal(room.pricePerNight, 1, 2)}"></span>/night)</td>
+                        <td class="text-right"><span class="currency" th:text="'$' + ${#numbers.formatDecimal(invoice.amount, 1, 2)}"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Tax (10%)</td>
+                        <td class="text-right"><span class="currency" th:text="'$' + ${#numbers.formatDecimal(invoice.taxAmount, 1, 2)}"></span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total Amount Due</strong></td>
+                        <td class="text-right"><strong><span class="currency" th:text="'$' + ${#numbers.formatDecimal(invoice.totalAmount, 1, 2)}"></span></strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Payment Status -->
+        <div class="section">
+            <div class="section-title">Payment Status:</div>
+            <div>
+                <span th:if="${invoice.status == 'Paid'}" class="status-badge status-paid">✓ Paid</span>
+                <span th:if="${invoice.status == 'Unpaid' || invoice.status == 'Pending'}" class="status-badge status-pending">⏳ Pending Payment</span>
+                <span th:if="${invoice.status == 'Overdue'}" class="status-badge status-overdue">⚠️ Overdue</span>
+                <span th:unless="${invoice.status == 'Paid' || invoice.status == 'Unpaid' || invoice.status == 'Pending' || invoice.status == 'Overdue'}" class="status-badge status-unpaid" th:text="${invoice.status}"></span>
+            </div>
+        </div>
+
+        <!-- Payment Details -->
+        <div class="section" th:if="${invoice.status == 'Paid'}">
+            <div class="section-title">Payment Details:</div>
+            <div class="info-block">
+                <div class="info-label">Payment Date</div>
+                <div class="info-value" th:text="${#temporals.format(invoice.paymentDate, 'MMM dd, yyyy')}"></div>
+            </div>
+            <div class="info-block" th:if="${invoice.paymentMethod}">
+                <div class="info-label">Payment Method</div>
+                <div class="info-value" th:text="${invoice.paymentMethod}"></div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Thank you for staying with us! We look forward to your next visit.</p>
+            <p style="margin-top: 10px; font-size: 0.9em; color: #999;">Grand Hotel © 2026. All Rights Reserved.</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
